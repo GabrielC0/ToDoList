@@ -1,18 +1,95 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TodoService } from '../services/todo.service';
 import { PriorityPipe } from '../../../shared/pipes/priority.pipe';
 import { HighlightDirective } from '../../../shared/directives/highlight.directive';
+import { CreateTodoRequest } from '../models/todo.model';
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule, PriorityPipe, HighlightDirective],
+  imports: [CommonModule, ReactiveFormsModule, PriorityPipe, HighlightDirective],
   template: `
     <div class="max-w-7xl mx-auto p-6">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestionnaire de Tâches</h1>
         <p class="text-gray-600">Organisez vos tâches avec le système Kanban en temps réel</p>
+      </div>
+
+      <!-- Formulaire de création de tâche -->
+      <div class="mb-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Créer une nouvelle tâche</h2>
+
+        <form [formGroup]="todoForm" (ngSubmit)="onSubmit()" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Titre -->
+            <div>
+              <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+                Titre de la tâche *
+              </label>
+              <input
+                id="title"
+                type="text"
+                formControlName="title"
+                placeholder="Ex: Réviser Angular"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                [class.border-red-500]="isFieldInvalid('title')"
+              />
+              @if (isFieldInvalid('title')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError('title') }}</p>
+              }
+            </div>
+
+            <!-- Priorité -->
+            <div>
+              <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">
+                Priorité *
+              </label>
+              <select
+                id="priority"
+                formControlName="priority"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="low">Faible</option>
+                <option value="medium">Moyenne</option>
+                <option value="high">Haute</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="3"
+              placeholder="Détails de la tâche (optionnel)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            ></textarea>
+          </div>
+
+          <!-- Bouton de soumission -->
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              [disabled]="todoForm.invalid || loading()"
+              class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              @if (loading()) {
+                <span
+                  class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
+                ></span>
+                Création...
+              } @else {
+                Créer la tâche
+              }
+            </button>
+          </div>
+        </form>
       </div>
 
       <!-- Dashboard des statistiques -->
@@ -198,16 +275,53 @@ import { HighlightDirective } from '../../../shared/directives/highlight.directi
           </div>
         </div>
       </div>
-
-      <!-- Actions -->
-      <div class="mt-8 text-center">
-        <!-- Bouton supprimé - les statistiques se mettent à jour automatiquement avec les Signals -->
-      </div>
     </div>
   `,
 })
 export class TodoListComponent {
+  private fb = inject(FormBuilder);
   todoService = inject(TodoService);
+
+  todoForm: FormGroup;
+  loading = signal(false);
+
+  constructor() {
+    this.todoForm = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: [''],
+      priority: ['medium', [Validators.required]],
+    });
+  }
+
+  async onSubmit() {
+    if (this.todoForm.valid) {
+      this.loading.set(true);
+
+      try {
+        const todoData: CreateTodoRequest = {
+          title: this.todoForm.value.title,
+          description: this.todoForm.value.description,
+          priority: this.todoForm.value.priority,
+        };
+
+        await this.todoService.createTodo(todoData);
+
+        // Réinitialiser le formulaire
+        this.todoForm.reset({
+          title: '',
+          description: '',
+          priority: 'medium',
+        });
+
+        // Marquer le formulaire comme non touché
+        this.todoForm.markAsUntouched();
+      } catch (error) {
+        console.error('Erreur lors de la création de la tâche:', error);
+      } finally {
+        this.loading.set(false);
+      }
+    }
+  }
 
   async moveTodo(id: number, newStatus: 'todo' | 'in-progress' | 'done'): Promise<void> {
     try {
@@ -215,5 +329,20 @@ export class TodoListComponent {
     } catch (error) {
       console.error('Erreur lors du déplacement de la tâche:', error);
     }
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.todoForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.todoForm.get(fieldName);
+    if (field?.errors) {
+      if (field.errors['required']) return 'Ce champ est requis';
+      if (field.errors['minlength'])
+        return `Minimum ${field.errors['minlength'].requiredLength} caractères`;
+    }
+    return '';
   }
 }

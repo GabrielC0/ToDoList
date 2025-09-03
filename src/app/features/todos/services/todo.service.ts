@@ -64,6 +64,9 @@ export class TodoService {
   }));
 
   constructor() {
+    // Restaurer les todos depuis localStorage au démarrage
+    this.loadTodosFromStorage();
+
     effect(() => {
       const todos = this.todos();
       console.warn(`Todos mis à jour: ${todos.length} todos`);
@@ -161,6 +164,28 @@ export class TodoService {
     } catch (error) {
       this.errorService.addError('Erreur lors du déplacement de la tâche', 'error');
       throw error;
+    }
+  }
+
+  private loadTodosFromStorage(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+          const parsedTodos = JSON.parse(savedTodos);
+          // Convertir les dates string en objets Date
+          const todosWithDates = parsedTodos.map((todo: unknown) => ({
+            ...todo as Todo,
+            createdAt: new Date((todo as Todo).createdAt),
+            updatedAt: new Date((todo as Todo).updatedAt)
+          }));
+          this.todos.set(todosWithDates);
+          console.warn(`Todos restaurés depuis localStorage: ${todosWithDates.length} todos`);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la restauration des todos depuis localStorage:', error);
+        // En cas d'erreur, on garde les todos par défaut
+      }
     }
   }
 }
