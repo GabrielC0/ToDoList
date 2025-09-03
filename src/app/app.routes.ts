@@ -20,6 +20,7 @@ export const routes: Routes = [
   },
   {
     path: 'demo',
+    canActivate: [authGuard, adminGuard],
     loadComponent: () =>
       import('./shared/components/notifications-demo/notifications-demo.component').then(
         (m) => m.NotificationsDemoComponent,

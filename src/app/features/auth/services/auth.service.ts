@@ -27,19 +27,11 @@ export class AuthService {
   private users = signal<User[]>([
     {
       id: 1,
-      name: 'Admin User',
-      email: 'admin@example.com',
+      name: 'Admin',
+      email: 'admin@admin.com',
       password: 'admin123',
       role: 'admin',
       createdAt: new Date('2024-01-01'),
-    },
-    {
-      id: 2,
-      name: 'Normal User',
-      email: 'user@example.com',
-      password: 'user123',
-      role: 'user',
-      createdAt: new Date('2024-01-02'),
     },
   ]);
 
