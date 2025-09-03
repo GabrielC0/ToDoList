@@ -5,10 +5,10 @@ import { ErrorService } from '../../../core/services/error.service';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private errorService = inject(ErrorService);
-  
+
   private currentUser = signal<User | null>(null);
   public currentUser$ = this.currentUser.asReadonly();
-  
+
   constructor() {
     if (typeof window !== 'undefined' && window.localStorage) {
       const savedUser = localStorage.getItem('currentUser');
@@ -16,7 +16,7 @@ export class AuthService {
         try {
           const user = JSON.parse(savedUser);
           this.currentUser.set(user);
-        } catch (error) {
+        } catch {
           localStorage.removeItem('currentUser');
           this.errorService.addError('Erreur lors de la restauration de la session', 'warning');
         }
@@ -62,7 +62,7 @@ export class AuthService {
       }
       this.errorService.addError('Email ou mot de passe incorrect', 'error');
       return { success: false, error: 'Email ou mot de passe incorrect' };
-    } catch (error) {
+    } catch {
       this.errorService.addError('Erreur lors de la connexion', 'error');
       return { success: false, error: 'Erreur lors de la connexion' };
     }
@@ -93,7 +93,7 @@ export class AuthService {
       this.setCurrentUser(newUser);
       this.errorService.addError('Compte créé avec succès !', 'info');
       return { success: true, user: newUser };
-    } catch (error) {
+    } catch {
       this.errorService.addError('Erreur lors de la création du compte', 'error');
       return { success: false, error: 'Erreur lors de la création du compte' };
     }
@@ -107,7 +107,7 @@ export class AuthService {
         localStorage.removeItem('currentUser');
       }
       this.errorService.addError('Déconnexion réussie', 'info');
-    } catch (error) {
+    } catch {
       this.errorService.addError('Erreur lors de la déconnexion', 'warning');
     }
   }
@@ -155,9 +155,9 @@ export class AuthService {
       if (!this.isAdmin()) {
         throw new Error('Accès non autorisé');
       }
-      const index = this.users().findIndex(u => u.id === userId);
+      const index = this.users().findIndex((u) => u.id === userId);
       if (index !== -1) {
-        this.users.update(current => current.filter(u => u.id !== userId));
+        this.users.update((current) => current.filter((u) => u.id !== userId));
         this.errorService.addError('Utilisateur supprimé avec succès', 'info');
       }
     } catch (error) {

@@ -1,11 +1,11 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, computed, effect } from '@angular/core';
 import { CreateTodoRequest, Todo } from '../models/todo.model';
 import { ErrorService } from '../../../core/services/error.service';
 
 @Injectable({ providedIn: 'root' })
 export class TodoService {
   private errorService = inject(ErrorService);
-  
+
   private todos = signal<Todo[]>([
     {
       id: 1,
@@ -38,6 +38,41 @@ export class TodoService {
       updatedAt: new Date('2024-01-14'),
     },
   ]);
+
+  public todos$ = this.todos.asReadonly();
+
+  public completedTodos = computed(() => this.todos().filter((todo) => todo.status === 'done'));
+
+  public pendingTodos = computed(() => this.todos().filter((todo) => todo.status === 'todo'));
+
+  public inProgressTodos = computed(() =>
+    this.todos().filter((todo) => todo.status === 'in-progress'),
+  );
+
+  public highPriorityTodos = computed(() =>
+    this.todos().filter((todo) => todo.priority === 'high'),
+  );
+
+  public todoStats = computed(() => ({
+    total: this.todos().length,
+    completed: this.completedTodos().length,
+    inProgress: this.inProgressTodos().length,
+    pending: this.pendingTodos().length,
+    highPriority: this.highPriorityTodos().length,
+    completionRate:
+      this.todos().length > 0 ? (this.completedTodos().length / this.todos().length) * 100 : 0,
+  }));
+
+  constructor() {
+    effect(() => {
+      const todos = this.todos();
+      console.warn(`Todos mis à jour: ${todos.length} todos`);
+
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('todos', JSON.stringify(todos));
+      }
+    });
+  }
 
   private delay(milliseconds: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -92,9 +127,7 @@ export class TodoService {
       const todo = this.todos().find((t) => t.id === id);
       if (todo) {
         const updatedTodo = { ...todo, ...updates, updatedAt: new Date() };
-        this.todos.update((current) =>
-          current.map((t) => (t.id === id ? updatedTodo : t))
-        );
+        this.todos.update((current) => current.map((t) => (t.id === id ? updatedTodo : t)));
         this.errorService.addError('Tâche mise à jour avec succès !', 'info');
         return updatedTodo;
       }
@@ -116,11 +149,18 @@ export class TodoService {
     }
   }
 
-  getTodosByStatus(status: Todo['status']): Todo[] {
-    return this.todos().filter((todo) => todo.status === status);
-  }
-
-  getTodosByPriority(priority: Todo['priority']): Todo[] {
-    return this.todos().filter((todo) => todo.priority === priority);
+  async moveTodo(id: number, newStatus: 'todo' | 'in-progress' | 'done'): Promise<void> {
+    try {
+      await this.delay(200);
+      this.todos.update((current) =>
+        current.map((todo) =>
+          todo.id === id ? { ...todo, status: newStatus, updatedAt: new Date() } : todo,
+        ),
+      );
+      this.errorService.addError('Tâche déplacée avec succès !', 'info');
+    } catch (error) {
+      this.errorService.addError('Erreur lors du déplacement de la tâche', 'error');
+      throw error;
+    }
   }
 }

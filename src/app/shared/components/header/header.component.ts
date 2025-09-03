@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/services/auth.service';
 
@@ -33,10 +33,16 @@ import { AuthService } from '../../../features/auth/services/auth.service';
                 Déconnexion
               </button>
             } @else {
-              <a routerLink="/auth/login" class="text-gray-600 hover:text-blue-600 transition-colors">
+              <a
+                routerLink="/auth/login"
+                class="text-gray-600 hover:text-blue-600 transition-colors"
+              >
                 Connexion
               </a>
-              <a routerLink="/auth/register" class="text-gray-600 hover:text-blue-600 transition-colors">
+              <a
+                routerLink="/auth/register"
+                class="text-gray-600 hover:text-blue-600 transition-colors"
+              >
                 Inscription
               </a>
             }
@@ -50,7 +56,7 @@ import { AuthService } from '../../../features/auth/services/auth.service';
 export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
-  
+
   currentUser = this.authService.currentUser$;
 
   logout(): void {

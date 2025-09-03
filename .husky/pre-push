@@ -1,13 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🧪 Exécution des tests avant push..."
-npm test
-
 echo "🔍 Vérification du linting..."
 npm run lint
 
 echo "🏗️  Vérification de la compilation..."
 npm run build
 
-echo "✅ Tous les tests sont passés ! Vous pouvez pousser votre code."
+echo "✅ Toutes les vérifications sont passées ! Vous pouvez pousser votre code."

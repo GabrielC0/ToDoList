@@ -3,9 +3,12 @@ import { inject } from '@angular/core';
 import { finalize } from 'rxjs';
 import { LoadingService } from '../services/loading.service';
 
-export const loadingInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>, next: HttpHandlerFn) => {
+export const loadingInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+) => {
   const loadingService = inject(LoadingService);
-  
+
   if (!request.url.includes('/auth/')) {
     loadingService.incrementRequestCount();
   }
@@ -15,6 +18,6 @@ export const loadingInterceptor: HttpInterceptorFn = (request: HttpRequest<unkno
       if (!request.url.includes('/auth/')) {
         loadingService.decrementRequestCount();
       }
-    })
+    }),
   );
 };

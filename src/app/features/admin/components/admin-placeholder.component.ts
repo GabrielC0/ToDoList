@@ -19,24 +19,24 @@ import { Todo } from '../../todos/models/todo.model';
 
       <div class="mb-8">
         <nav class="flex space-x-4">
-                      <button
-              (click)="activeTab.set('users')"
-              [class.bg-blue-600]="activeTab() === 'users'"
-              [class.text-white]="activeTab() === 'users'"
-              [class.text-gray-700]="activeTab() !== 'users'"
-              class="px-4 py-2 rounded-md font-medium hover:bg-blue-700 hover:text-white transition-colors"
-            >
-              Utilisateurs
-            </button>
-                      <button
-              (click)="activeTab.set('tickets')"
-              [class.bg-blue-600]="activeTab() === 'tickets'"
-              [class.text-white]="activeTab() === 'tickets'"
-              [class.text-gray-700]="activeTab() !== 'tickets'"
-              class="px-4 py-2 rounded-md font-medium hover:bg-blue-700 hover:text-white transition-colors"
-            >
-              Tickets
-            </button>
+          <button
+            (click)="activeTab.set('users')"
+            [class.bg-blue-600]="activeTab() === 'users'"
+            [class.text-white]="activeTab() === 'users'"
+            [class.text-gray-700]="activeTab() !== 'users'"
+            class="px-4 py-2 rounded-md font-medium hover:bg-blue-700 hover:text-white transition-colors"
+          >
+            Utilisateurs
+          </button>
+          <button
+            (click)="activeTab.set('tickets')"
+            [class.bg-blue-600]="activeTab() === 'tickets'"
+            [class.text-white]="activeTab() === 'tickets'"
+            [class.text-gray-700]="activeTab() !== 'tickets'"
+            class="px-4 py-2 rounded-md font-medium hover:bg-blue-700 hover:text-white transition-colors"
+          >
+            Tickets
+          </button>
         </nav>
       </div>
 
@@ -51,13 +51,19 @@ import { Todo } from '../../todos/models/todo.model';
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Utilisateur
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Rôle
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Actions
                       </th>
                     </tr>
@@ -68,7 +74,9 @@ import { Todo } from '../../todos/models/todo.model';
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10">
-                              <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                              <div
+                                class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+                              >
                                 <span class="text-sm font-medium text-gray-700">
                                   {{ user.name.charAt(0).toUpperCase() }}
                                 </span>
@@ -126,16 +134,24 @@ import { Todo } from '../../todos/models/todo.model';
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Ticket
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Statut
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Priorité
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         Actions
                       </th>
                     </tr>
@@ -195,7 +211,7 @@ import { Todo } from '../../todos/models/todo.model';
         </div>
       }
     </div>
-  `
+  `,
 })
 export class AdminComponent implements OnInit {
   private authService = inject(AuthService);

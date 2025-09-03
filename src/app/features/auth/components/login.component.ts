@@ -9,14 +9,16 @@ import { AuthService } from '../services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="min-h-screen w-fit text-black flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      class="min-h-screen w-fit text-black flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div class="w-full space-y-8">
         <div>
           <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Connexion à votre compte
           </h2>
         </div>
-        
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">
@@ -61,7 +63,9 @@ import { AuthService } from '../services/auth.service';
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               @if (loading()) {
-                <span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                <span
+                  class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
+                ></span>
                 Connexion en cours...
               } @else {
                 Se connecter
@@ -76,14 +80,12 @@ import { AuthService } from '../services/auth.service';
           }
 
           <div class="text-center">
-            <p class="text-sm text-gray-600">
-              LocalStorage used for DB
-            </p>
+            <p class="text-sm text-gray-600">LocalStorage used for DB</p>
           </div>
         </form>
       </div>
     </div>
-  `
+  `,
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -97,7 +99,7 @@ export class LoginComponent {
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
@@ -107,7 +109,7 @@ export class LoginComponent {
       this.error.set('');
 
       const result = await this.authService.login(this.loginForm.value);
-      
+
       if (result.success && result.user) {
         this.loading.set(false);
         this.router.navigate(['/todos']);
@@ -128,7 +130,8 @@ export class LoginComponent {
     if (field?.errors) {
       if (field.errors['required']) return 'Ce champ est requis';
       if (field.errors['email']) return 'Format d\'email invalide';
-      if (field.errors['minlength']) return `Minimum ${field.errors['minlength'].requiredLength} caractères`;
+      if (field.errors['minlength'])
+        return `Minimum ${field.errors['minlength'].requiredLength} caractères`;
     }
     return '';
   }

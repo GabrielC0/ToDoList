@@ -20,6 +20,16 @@ export const routes: Routes = [
   },
   {
     path: 'demo',
-    loadComponent: () => import('./shared/components/notifications-demo/notifications-demo.component').then((m) => m.NotificationsDemoComponent),
+    loadComponent: () =>
+      import('./shared/components/notifications-demo/notifications-demo.component').then(
+        (m) => m.NotificationsDemoComponent,
+      ),
+  },
+  {
+    path: 'signals',
+    loadComponent: () =>
+      import('./shared/components/signals-demo/signals-demo.component').then(
+        (m) => m.SignalsDemoComponent,
+      ),
   },
 ];
