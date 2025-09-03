@@ -8,19 +8,40 @@ export class AuthService {
 
   private currentUser = signal<User | null>(null);
   public currentUser$ = this.currentUser.asReadonly();
+  private isInitialized = signal(false);
 
   constructor() {
+    this.initializeAuth();
+  }
+
+  private async initializeAuth(): Promise<void> {
     if (typeof window !== 'undefined' && window.localStorage) {
       const savedUser = localStorage.getItem('currentUser');
       if (savedUser) {
         try {
           const user = JSON.parse(savedUser);
-          this.currentUser.set(user);
+          // Vérifier que l'utilisateur existe toujours dans la liste
+          const existingUser = this.users().find(u => u.id === user.id && u.email === user.email);
+          if (existingUser) {
+            this.currentUser.set(existingUser);
+            console.warn('Session restaurée pour:', existingUser.email);
+          } else {
+            // L'utilisateur n'existe plus, nettoyer localStorage
+            localStorage.removeItem('currentUser');
+            console.warn('Utilisateur supprimé, session nettoyée');
+          }
         } catch {
           localStorage.removeItem('currentUser');
           this.errorService.addError('Erreur lors de la restauration de la session', 'warning');
         }
       }
+    }
+    this.isInitialized.set(true);
+  }
+
+  async waitForInitialization(): Promise<void> {
+    while (!this.isInitialized()) {
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
   }
 
