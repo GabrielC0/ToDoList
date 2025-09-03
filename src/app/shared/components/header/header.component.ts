@@ -29,9 +29,6 @@ import { AuthService } from '../../../features/auth/services/auth.service';
               <a routerLink="/demo" class="text-gray-600 hover:text-blue-600 transition-colors">
                 Notifications
               </a>
-              <a routerLink="/signals" class="text-gray-600 hover:text-blue-600 transition-colors">
-                Signals Demo
-              </a>
               <button
                 (click)="logout()"
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
@@ -53,9 +50,6 @@ import { AuthService } from '../../../features/auth/services/auth.service';
               </a>
               <a routerLink="/demo" class="text-gray-600 hover:text-blue-600 transition-colors">
                 Notifications
-              </a>
-              <a routerLink="/signals" class="text-gray-600 hover:text-blue-600 transition-colors">
-                Signals Demo
               </a>
             }
           </nav>

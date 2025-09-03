@@ -25,11 +25,4 @@ export const routes: Routes = [
         (m) => m.NotificationsDemoComponent,
       ),
   },
-  {
-    path: 'signals',
-    loadComponent: () =>
-      import('./shared/components/signals-demo/signals-demo.component').then(
-        (m) => m.SignalsDemoComponent,
-      ),
-  },
 ];

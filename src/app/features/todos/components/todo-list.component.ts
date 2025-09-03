@@ -201,12 +201,7 @@ import { HighlightDirective } from '../../../shared/directives/highlight.directi
 
       <!-- Actions -->
       <div class="mt-8 text-center">
-        <button
-          (click)="refreshTodos()"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-        >
-          Actualiser les statistiques
-        </button>
+        <!-- Bouton supprimé - les statistiques se mettent à jour automatiquement avec les Signals -->
       </div>
     </div>
   `,
@@ -219,14 +214,6 @@ export class TodoListComponent {
       await this.todoService.moveTodo(id, newStatus);
     } catch (error) {
       console.error('Erreur lors du déplacement de la tâche:', error);
-    }
-  }
-
-  async refreshTodos(): Promise<void> {
-    try {
-      await this.todoService.getAllTodos();
-    } catch (error) {
-      console.error('Erreur lors de l\'actualisation:', error);
     }
   }
 }
